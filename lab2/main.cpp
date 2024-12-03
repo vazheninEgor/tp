@@ -24,8 +24,7 @@ private:
     int x, y;
 
 public:
-    GameObject(int id, const std::string& name, int x, int y)
-            : id(id), name(name), x(x), y(y) {}
+    GameObject(int id, const std::string& name, int x, int y) : id(id), name(name), x(x), y(y) {}
 
     int getId() const { return id; }
     std::string getName() const { return name; }
