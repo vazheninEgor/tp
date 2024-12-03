@@ -1,4 +1,5 @@
-# Интерфейс итератора
+from abc import ABC, abstractmethod
+
 class Iterator(ABC):
     @abstractmethod
     def has_next(self):
@@ -8,27 +9,39 @@ class Iterator(ABC):
     def next(self):
         pass
 
-# Конкретный итератор
-class ArrayIterator(Iterator):
-    def __init__(self, items):
-        self.items = items
+class StudentIterator(Iterator):
+    def __init__(self, students):
+        self.students = students
         self.position = 0
     
     def has_next(self):
-        return self.position < len(self.items)
+        return self.position < len(self.students)
     
     def next(self):
         if self.has_next():
-            item = self.items[self.position]
+            student = self.students[self.position]
             self.position += 1
-            return item
+            return student
         else:
-            raise StopIteration("No more items")
+            raise StopIteration("No more students")
 
-# Пример использования
+class StudentCollection:
+    def __init__(self):
+        self.students = []
+
+    def add_student(self, student):
+        self.students.append(student)
+
+    def create_iterator(self):
+        return StudentIterator(self.students)
+
 if __name__ == "__main__":
-    items = [1, 2, 3, 4, 5]
-    iterator = ArrayIterator(items)
+    students = StudentCollection()
+    students.add_student("Alice")
+    students.add_student("Bob")
+    students.add_student("Charlie")
     
+    iterator = students.create_iterator()
+
     while iterator.has_next():
         print(iterator.next())

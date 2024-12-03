@@ -1,5 +1,6 @@
-# Интерфейс обработчика
-class Handler(ABC):
+from abc import ABC, abstractmethod
+
+class RequestHandler(ABC):
     def __init__(self):
         self.next_handler = None
     
@@ -10,39 +11,64 @@ class Handler(ABC):
     def handle_request(self, request):
         pass
 
-# Конкретный обработчик A
-class ConcreteHandlerA(Handler):
+# Обработчик на этапе проверки заявки
+class ApplicationCheckHandler(RequestHandler):
     def handle_request(self, request):
-        if request.get_type() == "TYPE_A":
-            print("ConcreteHandlerA handled the request.")
+        if request.get_stage() == "CHECK":
+            print("Checking the application...")
+            request.set_stage("ANALYZE")
         elif self.next_handler:
             self.next_handler.handle_request(request)
 
-# Конкретный обработчик B
-class ConcreteHandlerB(Handler):
+# Обработчик на этапе анализа проблемы
+class ProblemAnalysisHandler(RequestHandler):
     def handle_request(self, request):
-        if request.get_type() == "TYPE_B":
-            print("ConcreteHandlerB handled the request.")
+        if request.get_stage() == "ANALYZE":
+            print("Analyzing the problem...")
+            request.set_stage("ESTIMATE")
         elif self.next_handler:
             self.next_handler.handle_request(request)
 
-# Запрос
+# Обработчик на этапе оценки стоимости
+class CostEstimationHandler(RequestHandler):
+    def handle_request(self, request):
+        if request.get_stage() == "ESTIMATE":
+            print("Estimating the repair cost...")
+            request.set_stage("APPROVE")
+        elif self.next_handler:
+            self.next_handler.handle_request(request)
+
+# Обработчик на этапе утверждения ремонта
+class ApprovalHandler(RequestHandler):
+    def handle_request(self, request):
+        if request.get_stage() == "APPROVE":
+            print("Approving the repair request...")
+            request.set_stage("COMPLETED")
+        elif self.next_handler:
+            self.next_handler.handle_request(request)
+
 class Request:
-    def __init__(self, req_type):
-        self.req_type = req_type
+    def __init__(self, stage):
+        self.stage = stage
     
-    def get_type(self):
-        return self.req_type
+    def get_stage(self):
+        return self.stage
 
-# Пример использования
+    def set_stage(self, stage):
+        self.stage = stage
+
 if __name__ == "__main__":
-    handler_a = ConcreteHandlerA()
-    handler_b = ConcreteHandlerB()
+    request = Request("CHECK")
+    
+    # Создание цепочки обработчиков
+    handler1 = ApplicationCheckHandler()
+    handler2 = ProblemAnalysisHandler()
+    handler3 = CostEstimationHandler()
+    handler4 = ApprovalHandler()
 
-    handler_a.set_next_handler(handler_b)
+    handler1.set_next_handler(handler2)
+    handler2.set_next_handler(handler3)
+    handler3.set_next_handler(handler4)
 
-    request_a = Request("TYPE_A")
-    request_b = Request("TYPE_B")
-
-    handler_a.handle_request(request_a)
-    handler_a.handle_request(request_b)
+    # Обработка запроса
+    handler1.handle_request(request)

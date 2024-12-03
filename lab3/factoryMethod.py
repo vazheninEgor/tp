@@ -1,39 +1,42 @@
 from abc import ABC, abstractmethod
 
-# Продукт
-class Logger(ABC):
+# Интерфейс для продукта (уведомление)
+class Notification(ABC):
     @abstractmethod
-    def log(self, message: str):
+    def send(self, message: str):
         pass
 
-# Конкретные продукты
-class FileLogger(Logger):
-    def log(self, message: str):
-        print(f"Logging to file: {message}")
+# Конкретный продукт: SMS уведомление
+class SMSNotification(Notification):
+    def send(self, message: str):
+        print(f"Отправка SMS: {message}")
 
-class ConsoleLogger(Logger):
-    def log(self, message: str):
-        print(f"Logging to console: {message}")
+# Конкретный продукт: Email уведомление
+class EmailNotification(Notification):
+    def send(self, message: str):
+        print(f"Отправка Email: {message}")
 
-# Создатель
-class LoggerFactory(ABC):
+# Фабрика уведомлений
+class NotificationFactory(ABC):
     @abstractmethod
-    def create_logger(self) -> Logger:
+    def create_notification(self) -> Notification:
         pass
 
-# Конкретные создатели
-class FileLoggerFactory(LoggerFactory):
-    def create_logger(self) -> Logger:
-        return FileLogger()
+# Фабрика для SMS уведомлений
+class SMSNotificationFactory(NotificationFactory):
+    def create_notification(self) -> Notification:
+        return SMSNotification()
 
-class ConsoleLoggerFactory(LoggerFactory):
-    def create_logger(self) -> Logger:
-        return ConsoleLogger()
+# Фабрика для Email уведомлений
+class EmailNotificationFactory(NotificationFactory):
+    def create_notification(self) -> Notification:
+        return EmailNotification()
 
-# Пример использования
-def client_code(factory: LoggerFactory):
-    logger = factory.create_logger()
-    logger.log("Factory Method Example")
+# Клиентский код
+def send_notification(factory: NotificationFactory, message: str):
+    notification = factory.create_notification()
+    notification.send(message)
 
-client_code(FileLoggerFactory())  # Logging to file
-client_code(ConsoleLoggerFactory())  # Logging to console
+# Использование
+send_notification(SMSNotificationFactory(), "Это тестовое SMS сообщение.")
+send_notification(EmailNotificationFactory(), "Это тестовое Email сообщение.")

@@ -1,54 +1,47 @@
 from abc import ABC, abstractmethod
 
-# Интерфейс стратегии
-class SortingStrategy(ABC):
+# Интерфейс стратегии расчета скидки
+class DiscountStrategy(ABC):
     @abstractmethod
-    def sort(self, array):
+    def calculate_discount(self, amount):
         pass
 
-# Конкретная стратегия сортировки пузырьком
-class BubbleSortStrategy(SortingStrategy):
-    def sort(self, array):
-        print("Sorting using Bubble Sort")
-        # Реализация сортировки пузырьком
-        n = len(array)
-        for i in range(n):
-            for j in range(0, n-i-1):
-                if array[j] > array[j+1]:
-                    array[j], array[j+1] = array[j+1], array[j]
+# Стратегия для обычного клиента
+class RegularCustomerDiscount(DiscountStrategy):
+    def calculate_discount(self, amount):
+        print("Applying regular customer discount.")
+        return amount * 0.05  # 5% скидка
 
-# Конкретная стратегия быстрой сортировки
-class QuickSortStrategy(SortingStrategy):
-    def sort(self, array):
-        print("Sorting using Quick Sort")
-        # Реализация быстрой сортировки
-        if len(array) <= 1:
-            return array
-        pivot = array[len(array) // 2]
-        left = [x for x in array if x < pivot]
-        middle = [x for x in array if x == pivot]
-        right = [x for x in array if x > pivot]
-        return self.sort(left) + middle + self.sort(right)
+# Стратегия для VIP клиента
+class VIPCustomerDiscount(DiscountStrategy):
+    def calculate_discount(self, amount):
+        print("Applying VIP customer discount.")
+        return amount * 0.20  # 20% скидка
 
-# Контекст, который использует стратегию
-class Sorter:
-    def __init__(self, strategy: SortingStrategy):
-        self.strategy = strategy
+# Стратегия для клиента с акциями
+class PromotionalDiscount(DiscountStrategy):
+    def calculate_discount(self, amount):
+        print("Applying promotional discount.")
+        return amount * 0.10  # 10% скидка
 
-    def set_strategy(self, strategy: SortingStrategy):
-        self.strategy = strategy
+class ShoppingCart:
+    def __init__(self, discount_strategy: DiscountStrategy):
+        self.discount_strategy = discount_strategy
 
-    def sort_array(self, array):
-        self.strategy.sort(array)
+    def set_discount_strategy(self, strategy: DiscountStrategy):
+        self.discount_strategy = strategy
 
-# Пример использования
+    def calculate_final_price(self, amount):
+        discount = self.discount_strategy.calculate_discount(amount)
+        return amount - discount
+
 if __name__ == "__main__":
-    sorter = Sorter(BubbleSortStrategy())
-    array1 = [5, 3, 8, 4, 2]
-    sorter.sort_array(array1)
-    print(array1)
+    cart = ShoppingCart(RegularCustomerDiscount())
+    total_amount = 1000
+    print(f"Final price: {cart.calculate_final_price(total_amount)}")
 
-    sorter.set_strategy(QuickSortStrategy())
-    array2 = [5, 3, 8, 4, 2]
-    sorter.sort_array(array2)
-    print(array2)
+    cart.set_discount_strategy(VIPCustomerDiscount())
+    print(f"Final price: {cart.calculate_final_price(total_amount)}")
+
+    cart.set_discount_strategy(PromotionalDiscount())
+    print(f"Final price: {cart.calculate_final_price(total_amount)}")

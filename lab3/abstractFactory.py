@@ -1,64 +1,74 @@
 from abc import ABC, abstractmethod
 
-# Продукты
-class Button(ABC):
+# Абстрактный продукт: Автомобиль
+class Car(ABC):
     @abstractmethod
-    def render(self):
+    def drive(self):
         pass
 
-class Checkbox(ABC):
+# Конкретный продукт: Автомобиль для города
+class CityCar(Car):
+    def drive(self):
+        print("Городской автомобиль: езда по асфальтированным дорогам.")
+
+# Конкретный продукт: Внедорожник
+class OffRoadCar(Car):
+    def drive(self):
+        print("Внедорожник: езда по пересеченной местности.")
+
+# Абстрактный продукт: Мотоцикл
+class Motorcycle(ABC):
     @abstractmethod
-    def render(self):
+    def ride(self):
         pass
 
-class WindowsButton(Button):
-    def render(self):
-        print("Rendering Windows Button")
+# Конкретный продукт: Городской мотоцикл
+class CityMotorcycle(Motorcycle):
+    def ride(self):
+        print("Городской мотоцикл: езда по городским улицам.")
 
-class MacButton(Button):
-    def render(self):
-        print("Rendering Mac Button")
+# Конкретный продукт: Внедорожный мотоцикл
+class OffRoadMotorcycle(Motorcycle):
+    def ride(self):
+        print("Внедорожный мотоцикл: езда по горным тропам.")
 
-class WindowsCheckbox(Checkbox):
-    def render(self):
-        print("Rendering Windows Checkbox")
-
-class MacCheckbox(Checkbox):
-    def render(self):
-        print("Rendering Mac Checkbox")
-
-# Абстрактная фабрика
-class GUIFactory(ABC):
+# Абстрактная фабрика: Производитель транспортных средств
+class VehicleFactory(ABC):
     @abstractmethod
-    def create_button(self) -> Button:
+    def create_car(self) -> Car:
         pass
 
     @abstractmethod
-    def create_checkbox(self) -> Checkbox:
+    def create_motorcycle(self) -> Motorcycle:
         pass
 
-# Конкретные фабрики
-class WindowsFactory(GUIFactory):
-    def create_button(self) -> Button:
-        return WindowsButton()
+# Конкретная фабрика для городских транспортных средств
+class CityVehicleFactory(VehicleFactory):
+    def create_car(self) -> Car:
+        return CityCar()
 
-    def create_checkbox(self) -> Checkbox:
-        return WindowsCheckbox()
+    def create_motorcycle(self) -> Motorcycle:
+        return CityMotorcycle()
 
-class MacFactory(GUIFactory):
-    def create_button(self) -> Button:
-        return MacButton()
+# Конкретная фабрика для внедорожных транспортных средств
+class OffRoadVehicleFactory(VehicleFactory):
+    def create_car(self) -> Car:
+        return OffRoadCar()
 
-    def create_checkbox(self) -> Checkbox:
-        return MacCheckbox()
+    def create_motorcycle(self) -> Motorcycle:
+        return OffRoadMotorcycle()
 
 # Клиентский код
-def client_code(factory: GUIFactory):
-    button = factory.create_button()
-    checkbox = factory.create_checkbox()
-    button.render()
-    checkbox.render()
+def test_vehicles(factory: VehicleFactory):
+    car = factory.create_car()
+    motorcycle = factory.create_motorcycle()
 
-# Пример использования
-client_code(WindowsFactory())
-client_code(MacFactory())
+    car.drive()
+    motorcycle.ride()
+
+# Использование
+print("Тестируем городские транспортные средства:")
+test_vehicles(CityVehicleFactory())
+
+print("\nТестируем внедорожные транспортные средства:")
+test_vehicles(OffRoadVehicleFactory())

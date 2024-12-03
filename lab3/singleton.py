@@ -1,17 +1,23 @@
-class Singleton:
+class APIConnection:
     _instance = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = super(Singleton, cls).__new__(cls, *args, **kwargs)
+            print("Создание нового подключения к API")
+            cls._instance = super(APIConnection, cls).__new__(cls, *args, **kwargs)
+        else:
+            print("Использование существующего подключения к API")
         return cls._instance
 
-    def some_method(self):
-        return "This is a Singleton method."
+    def connect(self):
+        print("Подключение к API...")
 
-# Пример использования
-singleton1 = Singleton()
-singleton2 = Singleton()
+# Использование
+conn1 = APIConnection()
+conn1.connect()
 
-print(singleton1 is singleton2)  # True
-print(singleton1.some_method())
+conn2 = APIConnection()
+conn2.connect()
+
+# Проверка, что это один и тот же объект
+print(conn1 is conn2)
